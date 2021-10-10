@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "101880434116",
+    "project_id": "dsconnect-dd663",
+    "storage_bucket": "dsconnect-dd663.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101880434116:android:fe4ed622aad7521653a891",
+        "android_client_info": {
+          "package_name": "com.example.ds_connect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101880434116-782vgpdltb1sh1quafseki4riqn90raq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ds_connect",
+            "certificate_hash": "b54af786d44923c3a0f6a4b93eee8b0e1938d6cc"
+          }
+        },
+        {
+          "client_id": "101880434116-qej2uldovl5ngfk5jt5ju5oaabbk0vg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ds_connect",
+            "certificate_hash": "996f0aaaec5a258985d7c866400a43a306532dbc"
+          }
+        },
+        {
+          "client_id": "101880434116-betvlnm38jq55o31n42pq2s6r6dgjst5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3A5_mflI-eJM0x-BqPSSDkz-Ex4H1uwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "101880434116-betvlnm38jq55o31n42pq2s6r6dgjst5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
