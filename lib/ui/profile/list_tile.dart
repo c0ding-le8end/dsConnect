@@ -1,6 +1,8 @@
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ds_connect/controllers/authController.dart';
 import 'package:ds_connect/controllers/firebase_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +10,8 @@ class TweetTile extends StatelessWidget {
   final AuthController controller=Get.find<AuthController>();
   final FirebaseRepo firebaseRepo=Get.find<FirebaseRepo>();
   final String tweet;
-   TweetTile({Key key, this.tweet}) : super(key: key);
+  final int index;
+   TweetTile({Key key, this.tweet,this.index,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,7 @@ class TweetTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+
                     Row(children: [CircularProfileAvatar(controller.profilePic.value, imageFit: BoxFit.cover,
                       //sets image path, it should be a URL string. default value is empty string, if path is empty it will display only initials
                       radius: 35,
@@ -58,7 +62,108 @@ fontFamily: "Acme",
 
                               )),
                         ),],),
-                    )],),
+                    ),Spacer(), PopupMenuButton(itemBuilder: (context)
+                      {
+                        return [PopupMenuItem(child: Text("Edit"),onTap: ()
+                          {
+                            Future.delayed(Duration(seconds: 1),()
+                            {
+                              showDialog(context: context, builder: (context)
+                              {String tweetSetter=tweet;
+                              return SimpleDialog(children: [Align(
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: Colors.black45,
+                                  ),
+                                  onPressed: () {
+                                    tweetSetter=tweet;
+                                    Get.back();
+                                  },
+                                ),
+                                alignment: Alignment.topRight,
+                              ),Card(
+                                elevation: 5,
+                                child: TextFormField(
+                                  initialValue:tweetSetter,
+                                  onChanged: (value) {
+                                    tweetSetter = value;
+                                  },
+                                  // ignore: missing_return
+                                  textAlign: TextAlign.center,
+                                  keyboardType:
+                                  TextInputType.multiline,
+
+                                  maxLines: 3,
+                                  maxLength: 256,
+
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(
+                                        color:
+                                        Colors.grey[400]),
+                                    //hintStyle: TextStyle(color: this.foregroundColor),
+                                  ),
+                                ),
+                              ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (tweetSetter !="") {
+                                      var reverseList=firebaseRepo.tweetList.reversed.toList();
+                                      reverseList[index]=tweetSetter;
+                                      reverseList= reverseList.reversed.toList();
+                                      firebaseRepo.tweetList.value=reverseList;
+                                      FirebaseFirestore.instance
+                                          .collection("accounts")
+                                          .doc(FirebaseAuth.instance.currentUser.phoneNumber.substring(3)).update({
+                                        "tweetList":firebaseRepo.tweetList}).then((value) {
+                                        reverseList=firebaseRepo.tweetList;
+                                      });
+                                      Get.back();
+
+                                    } else
+                                      return null;
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    width: 130,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.all(
+                                            Radius.circular(
+                                                50)),
+                                        gradient: LinearGradient(
+                                            colors: [
+                                              Color.fromRGBO(
+                                                  29, 0, 184, 1),
+                                              Color.fromRGBO(29,
+                                                  0, 184, 0.6),
+                                              //150,94,234
+                                            ])),
+                                    child: Center(
+                                        child: Text(
+                                          "Update Tweet",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight:
+                                              FontWeight.bold),
+                                        )),
+                                  ),
+                                )],);
+                              });
+                            });
+                          },),PopupMenuItem(child: Text("Delete"),onTap: ()
+                          {var reverseList=firebaseRepo.tweetList.reversed.toList();
+                            reverseList.removeAt(index);
+                           reverseList= reverseList.reversed.toList();
+                            firebaseRepo.tweetList.value=reverseList;
+                            FirebaseFirestore.instance
+                              .collection("accounts")
+                              .doc(FirebaseAuth.instance.currentUser.phoneNumber.substring(3)).update({
+                          "tweetList":firebaseRepo.tweetList});
+                            print("deleted");
+                          },)];
+                      },),],),
 
                     Divider(
                       color: Colors.blueGrey.shade900,

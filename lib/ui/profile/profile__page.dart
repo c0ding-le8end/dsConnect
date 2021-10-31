@@ -35,7 +35,6 @@ class ProPage extends StatelessWidget {
             actions: [TextButton(child: Text("cancel",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Acme",color: Color.fromRGBO(29,0,184, 1))),onPressed: ()=>Get.back(),),TextButton(child: Text("Ok",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Acme",color: Color.fromRGBO(29,0,184, 1))),onPressed: ()
             {
               controller.signOut();
-              controller.refreshDataBase();
               firebaseRepo.refreshDatabase();
             },)],);
         });
@@ -167,7 +166,6 @@ backgroundColor: Color(0xFFf8f9f5),
                     actions: [TextButton(child: Text("cancel",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Acme",color: Color.fromRGBO(29,0,184, 1))),onPressed: ()=>Get.back(),),TextButton(child: Text("Ok",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: "Acme",color: Color.fromRGBO(29,0,184, 1))),onPressed: ()
                       {
                         controller.signOut();
-                        controller.refreshDataBase();
                         firebaseRepo.refreshDatabase();
                       },)],);
                   });
@@ -222,10 +220,10 @@ backgroundColor: Color(0xFFf8f9f5),
                               controller.invalidUserName.value = false;
                               controller.invalidName.value = false;
 
-                              controller.name.value = firebaseRepo.name.value;
-                              controller.userName.value =
+                              controller.profileNameSetter.value = firebaseRepo.name.value;
+                              controller.userNameSetter.value =
                                   firebaseRepo.userName.value;
-                              controller.description.value =
+                              controller.descriptionSetter.value =
                                   firebaseRepo.description.value;
 
                               showDialog(
@@ -287,32 +285,29 @@ backgroundColor: Color(0xFFf8f9f5),
                     Obx(
                       () {
                         var reversedList=firebaseRepo.tweetList.reversed.toList();
-                        return Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 5,
-                        child: GlowingOverscrollIndicator(color: Color(0xFF861657),axisDirection: AxisDirection.down,
-                          child: ListView.separated(
-                            controller: scrollController,
-                            itemBuilder: (context, int index) {
-                              return TweetTile(
-                                  tweet: reversedList[index]);
-                            },
-                            separatorBuilder: (context, int index) {
-                              return SizedBox(
-                                height: 20,
-                              );
-                            },
-                            itemCount: reversedList.length,
+                        return Container(decoration: BoxDecoration(color: Color(0xFFFFFFFF),borderRadius: BorderRadius.only(topLeft: Radius.circular(50),topRight: Radius.circular(50))),
+                          child: GlowingOverscrollIndicator(color: Color(0xFF861657),axisDirection: AxisDirection.down,
+                            child: ListView.separated(
+                              controller: scrollController,
+                              itemBuilder: (context, int index) {
+                                return TweetTile(
+                                    tweet: reversedList[index],index: index,);
+                              },
+                              separatorBuilder: (context, int index) {
+                                return SizedBox(
+                                  height: 20,
+                                );
+                              },
+                              itemCount: reversedList.length,
+                            ),
                           ),
-                        ),
-                      );}
+                        );}
                     ),
                   );
                 },
                 initialChildSize: 0.4,
                 minChildSize: 0.27,
-                maxChildSize: 0.6,
+                maxChildSize: 0.8,
               )
             ]),
           ),

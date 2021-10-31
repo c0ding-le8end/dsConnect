@@ -11,12 +11,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/snackbar/snack.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:get/get_utils/src/extensions/dynamic_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AuthController extends GetxController {
@@ -31,14 +28,13 @@ RxnString verificationCode=RxnString();
   final TextEditingController nameController = TextEditingController(text:"");
   final TextEditingController userNameController = TextEditingController();
 
-  List<QueryDocumentSnapshot> queryCollection;
 Rx<FirebaseFirestore> document;
   RxBool resendOtp=RxBool(false);
   String get user => firebaseUser.value?.phoneNumber;
-  RxString userName=RxString("");
-  RxString name=RxString("");
+  RxString userNameSetter=RxString("");
+  RxString profileNameSetter=RxString("");
   RxString phoneNumber=RxString("");
-  RxString description=RxString("");
+  RxString descriptionSetter=RxString("");
   RxString tweet=RxString("");
   bool userNameExistence = false;
   bool phoneNumberExistence=false;
@@ -53,7 +49,7 @@ RxBool safeExit=RxBool(false);
   @override
   onInit() async{
     firebaseUser.bindStream(_auth.authStateChanges());
-    FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
+
     if(firebaseUser.value!=null)
     await FirebaseFirestore.instance.collection("accounts").doc(firebaseUser.value.phoneNumber.substring(3)).get().then((value) {
       profilePic=value.exists?RxString(value['profilePic']):RxString("https://upload.wikimedia.org/wikipedia/commons/6/60/Facebook_default_female_avatar.gif");
@@ -149,8 +145,8 @@ else
             invalidName.value=true;
             invalidPhoneNumber.value=true;
             invalidUserName.value=true;
-            name.value="";
-            userName.value="";
+            profileNameSetter.value="";
+            userNameSetter.value="";
             phoneNumber.value="";
             Get.off(()=>ProPage());
             phoneNumberEntered.value = 0;
@@ -192,10 +188,6 @@ codeSent.value=true;
     // });
   }
 
-  void refreshDataBase()
-  {
-    FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
-  }
   uploadProfilePic(File file)
   async {
     try
