@@ -12,10 +12,11 @@ class FirebaseRepo extends GetxController {
   RxString userName = RxString("User");
   RxString name = RxString("Name");
   RxString description = RxString("Hello everyone! I am New to DsConnect. Looking Forward to connect with you people");
-  List tweetList=[].obs;
-
+  RxList tweetList=RxList();
+  List<QueryDocumentSnapshot> queryCollection;
   @override
   void onInit() async {
+    FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
     if (FirebaseAuth.instance.currentUser != null)
       await FirebaseFirestore.instance
           .collection("accounts")
@@ -27,7 +28,7 @@ class FirebaseRepo extends GetxController {
           userName.value=value['userName'];
           name.value=value['name'];
           description.value=value['description'];
-          tweetList=value['tweetList'];
+          tweetList.value=value['tweetList'];
         } else {
           authController.profilePic.value =
               "https://upload.wikimedia.org/wikipedia/commons/6/60/Facebook_default_female_avatar.gif";
@@ -52,6 +53,7 @@ class FirebaseRepo extends GetxController {
   }
 
   initialDetails() async{
+    FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
     if (FirebaseAuth.instance.currentUser != null)
       await FirebaseFirestore.instance
         .collection("accounts")
@@ -63,7 +65,7 @@ class FirebaseRepo extends GetxController {
         userName.value=value['userName'];
         name.value=value['name'];
         description.value=value['description'];
-        tweetList=value['tweetList'];
+        tweetList.value=value['tweetList'];
       } else {
         authController.profilePic.value =
         "https://upload.wikimedia.org/wikipedia/commons/6/60/Facebook_default_female_avatar.gif";
@@ -74,6 +76,7 @@ class FirebaseRepo extends GetxController {
   }
   updateDetails({String name,String description,String userName})
   async{
+    FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
     await FirebaseFirestore.instance
         .collection("accounts")
         .doc(FirebaseAuth.instance.currentUser.phoneNumber.substring(3)).update({
@@ -95,7 +98,7 @@ class FirebaseRepo extends GetxController {
 
   }
   refreshDatabase()
-  {
+  { FirebaseFirestore.instance.collection("accounts").get().then((value) => queryCollection=value.docs);
      userName = RxString("User");
      name = RxString("Name");
      description = RxString("Hello everyone! I am New to DsConnect. Looking Forward to connect with you people");

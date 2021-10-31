@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ds_connect/controllers/authController.dart';
+import 'package:ds_connect/controllers/firebase_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 
@@ -10,8 +12,8 @@ import '../../model/animations.dart';
 class SignUp extends GetWidget<AuthController> {
   final validCharacters = RegExp(r'^[a-zA-Z0-9_\-=,\.;]+$');
 
-  
 
+  final FirebaseRepo firebaseRepo=Get.find<FirebaseRepo>();
 
   final  validNumbers=RegExp(r'^[0-9]+$');
   final emptyName=RegExp(r'^[ ]+$');
@@ -30,9 +32,9 @@ class SignUp extends GetWidget<AuthController> {
         controller.phoneController.clear();
         controller.phoneNumber.value="";
         controller.nameController.clear();
-        controller.name.value="";
+        controller.profileNameSetter.value="";
         controller.userNameController.clear();
-        controller.userName.value="";
+        controller.userNameSetter.value="";
         controller.invalidName.value=true;
         controller.invalidPhoneNumber.value=true;
         controller.invalidUserName.value=true;
@@ -82,7 +84,7 @@ class SignUp extends GetWidget<AuthController> {
                                   controller: controller.nameController,
                                   cursorColor: Colors.black87,
                                   onChanged: (value) {
-                                    controller.name.value = value;
+                                    controller.profileNameSetter.value = value;
 
                                   },
                                   // ignore: missing_return
@@ -105,7 +107,7 @@ class SignUp extends GetWidget<AuthController> {
                         ),
                         GetX<AuthController>(
                           builder: (controller) {
-                            if (controller.name.value == ""||emptyName.hasMatch(controller.name.value)) {
+                            if (controller.profileNameSetter.value == ""||emptyName.hasMatch(controller.profileNameSetter.value)) {
                               controller.invalidName.value=true;
                               return Container();
                             }
@@ -160,7 +162,7 @@ class SignUp extends GetWidget<AuthController> {
                                   textAlign: TextAlign.center,
                                   keyboardType: TextInputType.name,
                                   onChanged: (value) {
-                                    controller.userName.value = value;
+                                    controller.userNameSetter.value = value;
                                   },
                                   maxLength: 15,
                                   decoration: InputDecoration(
@@ -178,24 +180,24 @@ class SignUp extends GetWidget<AuthController> {
                         ),
                         GetX<AuthController>(
                           builder: (controller) {
-                            if (controller.userName.value == "") {
+                            if (controller.userNameSetter.value == "") {
                               controller.userNameExistence = false;
                               controller.invalidUserName.value=true;
                               return Container();
                             }
 
                             if (!validCharacters
-                                .hasMatch(controller.userName.value)) {
+                                .hasMatch(controller.userNameSetter.value)) {
                               controller.userNameExistence = false;
                               controller.invalidUserName.value=true;
                               debugPrint(
-                                  "${validCharacters.hasMatch(controller.userName.value)}");
+                                  "${validCharacters.hasMatch(controller.userNameSetter.value)}");
                               return Text(
                                   "UserName cannot have special characters",style: invalidStyle,);
                             }
-                            controller.queryCollection.forEach((element) {
+                            firebaseRepo.queryCollection.forEach((element) {
                               if (element['userName'] ==
-                                  controller.userName.value)
+                                  controller.userNameSetter.value)
                                 controller.userNameExistence = true;
                             });
                             // debugPrint("$controller.userNameExistence");
@@ -287,11 +289,12 @@ onChanged: (value)
                               controller.invalidPhoneNumber.value=true;
 
                               debugPrint(
-                                  "${validCharacters.hasMatch(controller.userName.value)}");
+                                  "${validCharacters.hasMatch(controller.userNameSetter.value)}");
                               return Text(
                                   "PhoneNumber cannot have special characters",style: invalidStyle,);
                             }
-                            controller.queryCollection.forEach((element) {
+
+                            firebaseRepo.queryCollection.forEach((element) {
                               if (element['phoneNumber'] ==
                                   controller.phoneNumber.value)
                                 controller.phoneNumberExistence = true;

@@ -22,11 +22,6 @@ class EditProfile {
     controller.invalidUserName.value = false;
     controller.invalidName.value = false;
 
-    controller.name.value = firebaseRepo.name.value;
-    controller.userName.value =
-        firebaseRepo.userName.value;
-    controller.description.value =
-        firebaseRepo.description.value;
 
    return SimpleDialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 10,
@@ -39,14 +34,14 @@ class EditProfile {
             ),
             onPressed: () {
               Get.back();
-              controller.userName.value = "";
+              controller.userNameSetter.value = "";
               controller.invalidName.value =
               true;
               controller.invalidUserName.value =
               true;
 
-              controller.name.value = "";
-              controller.description.value = "";
+              controller.profileNameSetter.value = "";
+              controller.descriptionSetter.value = "";
             },
           ),
           alignment: Alignment.topRight,
@@ -153,9 +148,9 @@ class EditProfile {
                             TextInputType
                                 .name,
                             onChanged: (value) {
-                              controller.userName
+                              controller.userNameSetter
                                   .value = value;
-                              print("${controller.userName.value}");
+                              print("${controller.userNameSetter.value}");
                             },
                             maxLength: 15,
                             decoration:
@@ -179,7 +174,7 @@ class EditProfile {
                 GetX<AuthController>(
                   builder: (controller) {
                     if (controller
-                        .userName.value ==
+                        .userNameSetter.value ==
                         "") {
                       controller
                           .userNameExistence =
@@ -191,7 +186,7 @@ class EditProfile {
 
                     if (!validCharacters.hasMatch(
                         controller
-                            .userName.value)) {
+                            .userNameSetter.value)) {
                       controller
                           .userNameExistence =
                       false;
@@ -199,16 +194,16 @@ class EditProfile {
                           .value = true;
                       debugPrint(
                           "${validCharacters.hasMatch(
-                              controller.userName.value)}");
+                              controller.userNameSetter.value)}");
                       return Text(
                         "UserName cannot have special characters",
                         style: invalidStyle,
                       );
                     }
-                    controller.queryCollection
+                    firebaseRepo.queryCollection
                         .forEach((element) {
                       if (element['userName'] ==
-                          controller.userName
+                          controller.userNameSetter
                               .value &&
                           element['userName'] !=
                               firebaseRepo
@@ -297,7 +292,7 @@ class EditProfile {
                             cursorColor:
                             Colors.black87,
                             onChanged: (value) {
-                              controller.name
+                              controller.profileNameSetter
                                   .value = value;
                             },
                             // ignore: missing_return
@@ -327,7 +322,7 @@ class EditProfile {
                 ),
                 GetX<AuthController>(
                   builder: (controller) {
-                    if (controller.name.value == ""||emptyName.hasMatch(controller.name.value)) {
+                    if (controller.profileNameSetter.value == ""||emptyName.hasMatch(controller.profileNameSetter.value)) {
                       controller.invalidName.value=true;
                       return Container();
                     }
@@ -369,7 +364,7 @@ class EditProfile {
                       initialValue: firebaseRepo
                           .description.value,
                       onChanged: (value) {
-                        controller.description
+                        controller.descriptionSetter
                             .value = value;
                       },
                       // ignore: missing_return
@@ -400,26 +395,26 @@ class EditProfile {
                         controller.invalidName
                             .value ==
                             false) {
-                      print("${controller.name.value}");
-                      print("${controller.userName.value}");
+                      print("${controller.profileNameSetter.value}");
+                      print("${controller.userNameSetter.value}");
 
                       firebaseRepo.updateDetails(
                           name: controller
-                              .name.value,
+                              .profileNameSetter.value,
                           description: controller
-                              .description.value,
+                              .descriptionSetter.value,
                           userName: controller
-                              .userName.value);
+                              .userNameSetter.value);
                       Get.back();
-                      controller.userName.value =
+                      controller.userNameSetter.value =
                       "";
                       controller.invalidName
                           .value = true;
                       controller.invalidUserName
                           .value = true;
-                      controller.name.value = "";
+                      controller.profileNameSetter.value = "";
                       controller
-                          .description.value = "";
+                          .descriptionSetter.value = "";
                     } else
                       return null;
                   },
