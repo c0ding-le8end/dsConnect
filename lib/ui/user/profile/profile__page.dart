@@ -5,7 +5,7 @@ import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:ds_connect/model/animations.dart';
 import 'package:ds_connect/controllers/authController.dart';
 import 'package:ds_connect/controllers/firebase_repo.dart';
-import 'package:ds_connect/ui/profile/edit_profile.dart';
+import 'package:ds_connect/ui/user/profile/edit_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,7 +22,7 @@ class ProPage extends StatelessWidget {
   final invalidStyle = TextStyle(
       fontFamily: "OpenSans", color: Colors.grey, fontWeight: FontWeight.bold);
 
-  ProPage({Key key}) : super(key: key);
+  ProPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class ProPage extends StatelessWidget {
               firebaseRepo.refreshDatabase();
             },)],);
         });
-        return null;
+        return false;
       },
       child: SafeArea(
         child: Scaffold(
@@ -128,18 +128,18 @@ backgroundColor: Color(0xFFf8f9f5),
             child: Container(
               width: 60,
               height: 60,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment(1.0, 0.0),
                     // 10% of the width, so there are ten blinds.
-                    colors: [Color(0xFFffa69e), Color(0xFF861657)],
+
+                    colors: [Color(0xFF1d00b8), Color(0xFF1d2bc4), Color(0xFF2645ce), Color(0xFF355bd7), Color(0xFF4870dd)],
                     // whitish to gray
                     tileMode:
                         TileMode.repeated, // repeats the gradient over the canvas
                   )),
-              child: Icon(FontAwesomeIcons.plus),
+              child: Icon(FontAwesomeIcons.plus,color: Colors.white,),
             ),
           ),
           appBar: AppBar(
@@ -191,7 +191,8 @@ backgroundColor: Color(0xFFf8f9f5),
                             begin: Alignment.centerLeft,
                             end: Alignment(1.0, 0.0),
                             // 10% of the width, so there are ten blinds.
-                            colors: [Color(0xFFffa69e), Color(0xFF861657)],
+                            colors: [Color(0xFF1d00b8), Color(0xFF1d2bc4), Color(0xFF2645ce), Color(0xFF355bd7), Color(0xFF4870dd)],
+                          //colors: [Color(0xFFffa69e), Color(0xFF861657)],
                             // whitish to gray
                             tileMode: TileMode
                                 .repeated, // repeats the gradient over the canvas
@@ -202,7 +203,7 @@ backgroundColor: Color(0xFFf8f9f5),
                         2.4,
                         Container(
                           child: CircularProfileAvatar(
-                            controller.profilePic.value, imageFit: BoxFit.cover,
+                            controller.profilePic!.value, imageFit: BoxFit.cover,
                             //sets image path, it should be a URL string. default value is empty string, if path is empty it will display only initials
                             radius: 50,
                             // sets radius, default 50.0
@@ -226,9 +227,7 @@ backgroundColor: Color(0xFFf8f9f5),
                               controller.descriptionSetter.value =
                                   firebaseRepo.description.value;
 
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => EditProfile(context).edit());
+                              Get.to(EditProfile());
                               // print(image.path==null?"not chosen":"${image.path}");
                             },
                             // sets on tap
@@ -286,7 +285,7 @@ backgroundColor: Color(0xFFf8f9f5),
                       () {
                         var reversedList=firebaseRepo.tweetList.reversed.toList();
                         return Container(decoration: BoxDecoration(color: Color(0xFFFFFFFF),borderRadius: BorderRadius.only(topLeft: Radius.circular(50),topRight: Radius.circular(50))),
-                          child: GlowingOverscrollIndicator(color: Color(0xFF861657),axisDirection: AxisDirection.down,
+                          child: GlowingOverscrollIndicator(color: Color(0xFF1d00b8),axisDirection: AxisDirection.down,
                             child: ListView.separated(
                               controller: scrollController,
                               itemBuilder: (context, int index) {

@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -29,23 +29,23 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^0.13.3
-  flutter_native_splash: ^1.1.8+4
-  font_awesome_flutter: ^9.0.0
-  firebase_core: ^1.7.0
-  firebase: ^9.0.2
-  cloud_firestore: ^2.5.3
-  firebase_auth: ^3.1.2
-  provider: ^4.3.2+1
-  intl: ^0.17.0
+  flutter_native_splash: ^2.3.4
+  font_awesome_flutter: ^10.6.0
+  firebase_core: ^2.18.0
+  cloud_firestore: ^4.10.0
+  firebase_auth: ^4.11.0
+  provider: 6.0.5
+  intl: ^0.18.1
   get: ^4.3.8
-  simple_animations: ^4.0.0
+  simple_animations: ^5.0.2
   circular_profile_avatar: ^2.0.5
-  pinput: ^1.2.0
-  firebase_app_check: ^0.0.2+2
-  image_picker: ^0.8.4+2
-  firebase_storage: ^10.0.4
-  flutter_launcher_icons: ^0.9.2
+  pinput: ^3.0.1
+  firebase_app_check: ^0.2.1
+  image_picker: ^1.0.4
+  firebase_storage: ^11.3.0
+  flutter_launcher_icons: ^0.13.1
   animated_splash_screen: ^1.1.0
+  sa4_migration_kit: ^1.0.0
 
 
 dev_dependencies:

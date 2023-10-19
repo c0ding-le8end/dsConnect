@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:simple_animations/multi_tween/multi_tween.dart';
-import 'package:simple_animations/stateless_animation/play_animation.dart';
+import 'package:sa4_migration_kit/multi_tween/multi_tween.dart';
+import 'package:sa4_migration_kit/stateless_animation/play_animation.dart';
 enum AniProps { opacity, translateY }
 class FadeAnimation extends StatelessWidget {
   final double delay;

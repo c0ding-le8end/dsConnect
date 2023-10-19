@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ds_connect/controllers/authController.dart';
 import 'package:ds_connect/controllers/firebase_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
@@ -17,28 +18,28 @@ class SignUp extends GetWidget<AuthController> {
 
   final  validNumbers=RegExp(r'^[0-9]+$');
   final emptyName=RegExp(r'^[ ]+$');
-  final invalidStyle = TextStyle(fontFamily: "OpenSans",color: Color.fromRGBO(29,0,184, 0.8),fontWeight: FontWeight.bold);
-
+  final invalidStyle = TextStyle(fontFamily: "OpenSans",color: Color(0xffFF9494),fontWeight: FontWeight.bold);
+  RegExp validEmailExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       // ignore: missing_return
-      onWillPop: () {
+      onWillPop: () async{
         controller.safeExit.value=true;
-        controller.phoneNumberEntered.value = controller.currentScreen;
-        controller.currentScreen=0;
-        controller.phoneNumberExistence=false;
-        controller.phoneNumberExistence=false;
-        controller.phoneController.clear();
-        controller.phoneNumber.value="";
+        controller.signUpPageSelected.value = 0;
+        // controller.currentScreen=0;
+        // controller.phoneNumberExistence=false;
+        // controller.phoneNumberExistence=false;
+        // controller.phoneController.clear();
+        // controller.phoneNumber.value="";
         controller.nameController.clear();
         controller.profileNameSetter.value="";
         controller.userNameController.clear();
         controller.userNameSetter.value="";
         controller.invalidName.value=true;
-        controller.invalidPhoneNumber.value=true;
+        // controller.invalidPhoneNumber.value=true;
         controller.invalidUserName.value=true;
-
+return false;
       },
       child: FadeAnimation(
         0.5,
@@ -79,7 +80,7 @@ class SignUp extends GetWidget<AuthController> {
                                 decoration: BoxDecoration(
                                     border: Border(
                                         bottom: BorderSide(
-                                            color: Colors.grey[100]))),
+                                            color: Colors.grey[100]!))),
                                 child: TextFormField(
                                   controller: controller.nameController,
                                   cursorColor: Colors.black87,
@@ -154,7 +155,7 @@ class SignUp extends GetWidget<AuthController> {
                                 decoration: BoxDecoration(
                                     border: Border(
                                         bottom: BorderSide(
-                                            color: Colors.grey[100]))),
+                                            color: Colors.grey[100]!))),
                                 child: TextFormField(
                                   controller: controller.userNameController,
                                   cursorColor: Colors.black87,
@@ -195,7 +196,7 @@ class SignUp extends GetWidget<AuthController> {
                               return Text(
                                   "UserName cannot have special characters",style: invalidStyle,);
                             }
-                            firebaseRepo.queryCollection.forEach((element) {
+                            firebaseRepo.queryCollection!.forEach((element) {
                               if (element['userName'] ==
                                   controller.userNameSetter.value)
                                 controller.userNameExistence = true;
@@ -221,101 +222,268 @@ class SignUp extends GetWidget<AuthController> {
                 SizedBox(
                   height: 40,
                 ),
-                Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromRGBO(143, 148, 251, .2),
-                              blurRadius: 20.0,
-                              offset: Offset(0, 10))
-                        ]),
-                    child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 10.0, bottom: 10.0, right: 00.0),
-                              child: Icon(
-                                Icons.phone,
-                                color: Colors.grey,
-                              ),
+                Container(padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color.fromRGBO(143, 148, 251, .2),
+                            blurRadius: 20.0,
+                            offset: Offset(0, 10))
+                      ]),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 00.0),
+                            child: Icon(
+                              Icons.alternate_email,
+                              color: Colors.grey,
                             ),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom:
-                                            BorderSide(color: Colors.grey[100]))),
-                                child: TextFormField(
-                                  controller: controller.phoneController,
-                                  cursorColor: Colors.black87,
-                                  // ignore: missing_return
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.phone,
-                                  maxLength: 10,
-onChanged: (value)
-                                  {
-                                    controller.phoneNumber.value=value;
-                                  },
-                                  decoration: InputDecoration(
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    hintText: "Phone No ",
-                                    hintStyle: TextStyle(color: Colors.grey[400]),
-                                    //hintStyle: TextStyle(color: this.foregroundColor),
-                                  ),
+                          ),
+                          Expanded(
+                            child: Container(padding: EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  border: Border(bottom: BorderSide(color: Colors.grey[100]!))
+                              ),
+                              child: TextFormField(controller: controller.emailController,cursorColor: Colors.black87,
+                                // ignore: missing_return
+                                textAlign: TextAlign.center,
+                                onChanged: (value)
+                                {
+                                  controller.email.value=value;
+                                },
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Email ",
+                                  hintStyle: TextStyle(color: Colors.grey[400]),
+                                  //hintStyle: TextStyle(color: this.foregroundColor),
+
                                 ),
+
                               ),
                             ),
-                          ],
-                        ),GetX<AuthController>(
-                          builder: (controller) {
-                            if (controller.phoneNumber.value == "") {
-                              controller.phoneNumberExistence = false;
-                              controller.invalidPhoneNumber.value=true;
-                              return Container();
-                            }
-
-                            if (!validNumbers
-                                .hasMatch(controller.phoneNumber.value)) {
-                              controller.phoneNumberExistence = false;
-                              controller.invalidPhoneNumber.value=true;
-
-                              debugPrint(
-                                  "${validCharacters.hasMatch(controller.userNameSetter.value)}");
-                              return Text(
-                                  "PhoneNumber cannot have special characters",style: invalidStyle,);
-                            }
-
-                            firebaseRepo.queryCollection.forEach((element) {
-                              if (element['phoneNumber'] ==
-                                  controller.phoneNumber.value)
-                                controller.phoneNumberExistence = true;
-                            });
-                            // debugPrint("$controller.phoneNumberExistence");
-                            if (controller.phoneNumberExistence)
-                            {controller.phoneNumberExistence=false;
-                            controller.invalidPhoneNumber.value=true;
-                            return Text(
-                                "Phone Number Exists,try a different one",style: invalidStyle,);
-                            }
-
-                            controller.phoneNumberExistence = false;
-                            controller.invalidPhoneNumber.value=false;
+                          ),
+                        ],
+                      ),
+                      GetX<AuthController>(
+                        builder: (controller) {
+                          if (controller.email.value == "") {
+                            controller.emailExistence = false;
+                            controller.invalidEmail.value=true;
                             return Container();
-                          },
-                        )
-                      ],
-                    )
+                          }
 
-                    ),
+                          if (!validEmailExp
+                              .hasMatch(controller.email.value)) {
+                            controller.emailExistence = false;
+                            controller.invalidEmail.value=true;
+
+                            // debugPrint(
+                            //     "${validCharacters.hasMatch(controller.userNameSetter.value)}");
+                            return Text(
+                              "Email Entered seems to be invalid",style: invalidStyle,);
+                          }
+
+                          for(var element in firebaseRepo.queryCollection!)
+                            {
+                              if (element['email'] ==
+                                  controller.email.value)
+                                controller.emailExistence = true;
+                            }
+                          // debugPrint("$controller.phoneNumberExistence");
+                          if (controller.emailExistence)
+                          {controller.emailExistence=false;
+                          controller.invalidEmail.value=true;
+                          return Text(
+                            "An account for the given email already exists,try a different one",style: invalidStyle,);
+                          }
+
+                          controller.emailExistence = false;
+                          controller.invalidEmail.value=false;
+                          return Container();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color.fromRGBO(143, 148, 251, .2),
+                            blurRadius: 20.0,
+                            offset: Offset(0, 10))
+                      ]),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 00.0),
+                            child: Icon(
+                              Icons.lock_open,
+                              color: Colors.grey,
+
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.grey[100]!))
+                            ),
+                              child: TextFormField(controller: controller.passwordController,
+                                obscureText: true,
+                                onChanged: (value)
+                                {
+                                  controller.password.value=value;
+                                },
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Password',
+                                  hintStyle: TextStyle(color: Colors.grey[400]),
+
+                                ),
+
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      GetX<AuthController>(
+                        builder: (controller) {
+                          if (controller.password.value == "") {
+                            controller.invalidPassword.value=true;
+                            return Container();
+                          }
+
+                          if (controller.password.value.length<7||controller.password.value.length>14) {
+                            controller.invalidPassword.value=true;
+
+                            // debugPrint(
+                            //     "${validCharacters.hasMatch(controller.userNameSetter.value)}");
+                            return Text(
+                              "Password must contain a minimum of 7 characters and a maximum of 14 characters",style: invalidStyle,);
+                          }
+
+
+
+
+
+                          controller.invalidPassword.value=false;
+                          return Container();
+                        },
+                      )
+
+                    ],
+                  ),
+                ),
+//                 Container(
+//                     padding: EdgeInsets.all(5),
+//                     decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(10),
+//                         boxShadow: [
+//                           BoxShadow(
+//                               color: Color.fromRGBO(143, 148, 251, .2),
+//                               blurRadius: 20.0,
+//                               offset: Offset(0, 10))
+//                         ]),
+//                     child: Column(
+//                       children: [
+//
+//                         Row(
+//                           crossAxisAlignment: CrossAxisAlignment.center,
+//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                           children: <Widget>[
+//                             Padding(
+//                               padding: EdgeInsets.only(
+//                                   top: 10.0, bottom: 10.0, right: 00.0),
+//                               child: Icon(
+//                                 Icons.phone,
+//                                 color: Colors.grey,
+//                               ),
+//                             ),
+//                             Expanded(
+//                               child: Container(
+//                                 padding: EdgeInsets.all(8.0),
+//                                 decoration: BoxDecoration(
+//                                     border: Border(
+//                                         bottom:
+//                                             BorderSide(color: Colors.grey[100]))),
+//                                 child: TextFormField(
+//                                   controller: controller.phoneController,
+//                                   cursorColor: Colors.black87,
+//                                   // ignore: missing_return
+//                                   textAlign: TextAlign.center,
+//                                   keyboardType: TextInputType.phone,
+//                                   maxLength: 10,
+// onChanged: (value)
+//                                   {
+//                                     controller.phoneNumber.value=value;
+//                                   },
+//                                   decoration: InputDecoration(
+//                                     counterText: "",
+//                                     border: InputBorder.none,
+//                                     hintText: "Phone No ",
+//                                     hintStyle: TextStyle(color: Colors.grey[400]),
+//                                     //hintStyle: TextStyle(color: this.foregroundColor),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),GetX<AuthController>(
+//                           builder: (controller) {
+//                             if (controller.phoneNumber.value == "") {
+//                               controller.phoneNumberExistence = false;
+//                               controller.invalidPhoneNumber.value=true;
+//                               return Container();
+//                             }
+//
+//                             if (!validNumbers
+//                                 .hasMatch(controller.phoneNumber.value)) {
+//                               controller.phoneNumberExistence = false;
+//                               controller.invalidPhoneNumber.value=true;
+//
+//                               debugPrint(
+//                                   "${validCharacters.hasMatch(controller.userNameSetter.value)}");
+//                               return Text(
+//                                   "PhoneNumber cannot have special characters",style: invalidStyle,);
+//                             }
+//
+//                             firebaseRepo.queryCollection.forEach((element) {
+//                               if (element['phoneNumber'] ==
+//                                   controller.phoneNumber.value)
+//                                 controller.phoneNumberExistence = true;
+//                             });
+//                             // debugPrint("$controller.phoneNumberExistence");
+//                             if (controller.phoneNumberExistence)
+//                             {controller.phoneNumberExistence=false;
+//                             controller.invalidPhoneNumber.value=true;
+//                             return Text(
+//                                 "Phone Number Exists,try a different one",style: invalidStyle,);
+//                             }
+//
+//                             controller.phoneNumberExistence = false;
+//                             controller.invalidPhoneNumber.value=false;
+//                             return Container();
+//                           },
+//                         )
+//                       ],
+//                     )
+//
+//                     ),
                 SizedBox(height: 40),
                 GetBuilder<AuthController>(
                   builder:(controller)=> Container(
@@ -329,38 +497,26 @@ onChanged: (value)
                     child: InkWell(
                       onTap: (() async {
                         try{
-                          if(controller.invalidUserName.value==false&&controller.invalidPhoneNumber.value==false&&controller.invalidName.value==false&&controller.phoneNumber.value.length==10)
-                            {await FirebaseFirestore.instance
-                                .collection("accounts")
-                                .doc(controller.phoneController.text)
-                                .get()
-                                .then((value) {
-                              controller.existence = value.exists;
-                            });
-                            if (controller.existence)
-                              return errorDialog(context,
-                                  "Account for the given Number already Exists");
+                          if(controller.invalidUserName.value==false&&controller.invalidEmail.value==false&&controller.invalidName.value==false&&controller.invalidPassword.value==false)
+                            {
 
                             controller.context = context;
-                            controller.currentScreen =
-                                controller.phoneNumberEntered.value;
-                            controller.phoneNumberEntered.value = 1;
-
+                            controller.createUser(controller.nameController.text, controller.emailController.text, controller.passwordController.text,controller.userNameController.text);
                             }
                           else
                             return null;
 
                         }
-                        catch(e)
+                        on FirebaseAuthException catch(e)
                         {
-                          errorDialog(context, e.message);
+                          errorDialog(context, e.message.toString());
                         }
 
 
                       }),
                       child:  Center(
-                        child: Obx(()=>controller.codeSent.value==false?Text("Create Account", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                        ):Text("Please Wait for ${controller.resetTimer.value} secs more",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+                        child: Text("Create Account", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        )
                       ),
                     ),
                   ),
@@ -397,69 +553,7 @@ onChanged: (value)
 //   key: _formKey,
 //   child: Column(
 //     children: <Widget>[
-//       Row(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Padding(
-//             padding: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 00.0),
-//             child: Icon(
-//               Icons.alternate_email,
-//               color: Colors.grey,
-//             ),
-//           ),
-//           Expanded(
-//             child: Container(padding: EdgeInsets.all(8.0),
-//               decoration: BoxDecoration(
-//                   border: Border(bottom: BorderSide(color: Colors.grey[100]))
-//               ),
-//               child: TextFormField(controller: emailController,cursorColor: Colors.black87,
-//                 // ignore: missing_return
-//                 textAlign: TextAlign.center,
-//                 decoration: InputDecoration(
-//                   border: InputBorder.none,
-//                   hintText: "Email ",
-//                   hintStyle: TextStyle(color: Colors.grey[400]),
-//                   //hintStyle: TextStyle(color: this.foregroundColor),
-//
-//                 ),
-//
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//       Row(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Padding(
-//             padding: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 00.0),
-//             child: Icon(
-//               Icons.lock_open,
-//               color: Colors.grey,
-//
-//             ),
-//           ),
-//           Expanded(
-//             child: Container(decoration: BoxDecoration(
-//                 border: Border(bottom: BorderSide(color: Colors.grey[100]))
-//             ),
-//               child: TextFormField(controller: passwordController,
-//                 obscureText: true,
-//                 textAlign: TextAlign.center,
-//                 decoration: InputDecoration(
-//                   border: InputBorder.none,
-//                   hintText: 'Password',
-//                   hintStyle: TextStyle(color: Colors.grey[400]),
-//
-//                 ),
-//
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
+
 //
 //       // ignore: deprecated_member_use
 //     ],
@@ -651,3 +745,5 @@ onChanged: (value)
 //         },child: Text("Ok"),)],);
 //     });
 //   }
+//Obx(()=>controller.codeSent.value==false?Text("Create Account", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+//                         ):Text("Please Wait for ${controller.resetTimer.value} secs more",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
